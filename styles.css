@@ -1,0 +1,247 @@
+ * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: Arial, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      background: rgba(0, 0, 0, 0.5); 
+      color: white;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: white;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #90ee90;
+    }
+
+    .nav-btn {
+      background: #2e8b57;
+      padding: 8px 15px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: white;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .nav-btn:hover {
+      background: #246b45;
+    }
+
+    /* Hero */
+    .hero {
+      background: url("https://wallpaper.dog/large/5556704.jpg") no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      position: relative;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4); 
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .cta-btn {
+      background: #2e8b57;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .cta-btn:hover {
+      background: #246b45;
+    }
+
+    /* Placeholder sections for navigation */
+    section {
+      padding: 100px 20px;
+      min-height: 100vh;
+    }
+
+    #quiz { 
+        background: #f9fff9;
+     }
+    #results { 
+        background: #e6f5ec;
+     }
+    #tips { 
+        background: #f4fdf7;
+     }
+    #about {
+         background: #f0f0f0; 
+        }
+/* About Section */
+.about-section {
+  background: linear-gradient(135deg, #e8f5e9, #f0fdf4);
+  padding: 80px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about-text {
+  flex: 1;
+  animation: slideInLeft 1s ease;
+}
+
+.about-text h2 {
+  font-size: 2.8rem;
+  color: #1b5e20;
+  margin-bottom: 1rem;
+}
+
+.about-text h2 span {
+  color: #43a047;
+}
+
+.about-text p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.about-badge {
+  display: inline-block;
+  background: #43a047;
+  color: white;
+  font-size: 0.9rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 8px rgba(67, 160, 71, 0.4);
+}
+
+.about-features h3 {
+  font-size: 1.5rem;
+  color: #2e7d32;
+  margin-bottom: 0.8rem;
+}
+
+.about-features ul {
+  list-style: none;
+  padding: 0;
+}
+
+.about-features ul li {
+  margin-bottom: 0.8rem;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #444;
+}
+
+.about-features ul li strong {
+  color: #1b5e20;
+}
+
+.about-image {
+  flex: 1;
+  max-width: 520px;
+  animation: slideInRight 1s ease;
+}
+
+.about-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.4s ease;
+}
+
+.about-image img:hover {
+  transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .about-container {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+    /* Responsive */
+    @media(max-width: 768px) {
+      .nav-links {
+        display: none; /* hide menu on mobile for now */
+      }
+    }

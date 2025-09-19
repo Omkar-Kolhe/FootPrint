@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Footprint Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide-react@latest/dist/lucide-react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdf4; /* A very light green for eco theme */
+        }
+        .hidden-section {
+            display: none;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #22c55e, #15803d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .answer-btn.selected {
+            border-color: #22c55e;
+            background-color: #dcfce7;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- App Container -->
+    <div id="app" class="min-h-screen flex flex-col">
+
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold gradient-text flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M16.24 7.76c-1.37-1.37-3.58-1.37-4.95 0a3.5 3.5 0 0 0 0 4.95l4.95-4.95z"></path><path d="M12 2v20"></path><path d="M2 12h20"></path></svg>
+                    EcoTrack
+                </a>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#home" class="text-gray-600 hover:text-green-600 transition">Home</a>
+                    <a href="#about" class="text-gray-600 hover:text-green-600 transition">About</a>
+                    <button id="nav-quiz-btn" class="bg-green-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition shadow-sm">Start Quiz</button>
+                    <button id="auth-action-btn" class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 transition">Sign Up</button>
+                </div>
+                <div class="md:hidden">
+                    <button id="hamburger-btn" class="text-gray-600 hover:text-green-600 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                    </button>
+                </div>
+            </nav>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col space-y-4">
+                 <a href="#home" class="text-gray-600 hover:text-green-600 transition">Home</a>
+                 <a href="#about" class="text-gray-600 hover:text-green-600 transition">About</a>
+                 <button id="mobile-quiz-btn" class="w-full bg-green-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition shadow-sm">Start Quiz</button>
+                 <button id="mobile-auth-action-btn" class="w-full bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 transition">Sign Up</button>
+            </div>
+        </header>
+
+        <main class="flex-grow">
+            <!-- Landing Page Section -->
+            <section id="home-page" class="container mx-auto px-6 py-20 text-center fade-in">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4">Discover Your <span class="gradient-text">Carbon Footprint</span></h1>
+                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">Take our quick and easy quiz to understand your environmental impact and learn how to live a more sustainable life.</p>
+                <button id="landing-quiz-btn" class="bg-green-600 text-white font-bold py-3 px-8 rounded-full text-lg hover:bg-green-700 transition transform hover:scale-105 shadow-lg">Calculate Your Impact</button>
+                <div class="mt-16 max-w-4xl mx-auto">
+                    <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+                        <!-- Sun -->
+                        <circle cx="180" cy="20" r="10" fill="#facc15"></circle>
+                        <!-- Hills -->
+                        <path d="M 0 100 Q 25 50 50 75 T 100 80 T 150 60 T 200 90 V 100 Z" fill="#86efac"></path>
+                        <path d="M 0 100 Q 35 60 70 80 T 140 70 T 200 80 V 100 Z" fill="#4ade80"></path>
+                        <!-- Wind Turbines -->
+                        <g transform="translate(40, 45)">
+                            <line x1="0" y1="0" x2="0" y2="30" stroke="#a3a3a3" stroke-width="1.5"></line>
+                            <g class="animate-spin" style="transform-origin: 0px 0px;">
+                                <path d="M 0 0 L 15 2" stroke="#d4d4d4" stroke-width="1.5"></path>
+                                <path d="M 0 0 L -8 -13" stroke="#d4d4d4" stroke-width="1.5"></path>
+                                <path d="M 0 0 L -7 14" stroke="#d4d4d4" stroke-width="1.5"></path>
+                            </g>
+                        </g>
+                         <g transform="translate(130, 30)">
+                            <line x1="0" y1="0" x2="0" y2="30" stroke="#a3a3a3" stroke-width="1.5"></line>
+                             <g class="animate-spin" style="transform-origin: 0px 0px; animation-delay: -0.5s;">
+                                <path d="M 0 0 L 15 2" stroke="#d4d4d4" stroke-width="1.5"></path>
+                                <path d="M 0 0 L -8 -13" stroke="#d4d4d4" stroke-width="1.5"></path>
+                                <path d="M 0 0 L -7 14" stroke="#d4d4d4" stroke-width="1.5"></path>
+                            </g>
+                        </g>
+                        <!-- Tree -->
+                        <g transform="translate(80, 55)">
+                           <rect x="-2" y="10" width="4" height="15" fill="#7c2d12"></rect>
+                           <circle cx="0" cy="5" r="8" fill="#16a34a"></circle>
+                           <circle cx="5" cy="8" r="6" fill="#15803d"></circle>
+                           <circle cx="-5" cy="8" r="6" fill="#15803d"></circle>
+                        </g>
+                    </svg>
+                </div>
+            </section>
+            
+            <!-- About Section -->
+            <section id="about" class="bg-white py-20">
+                <div class="container mx-auto px-6 text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">About EcoTrack</h2>
+                    <p class="text-gray-600 max-w-3xl mx-auto mb-12">EcoTrack was born from a simple idea: to make environmental awareness accessible to everyone. Our mission is to empower individuals with the knowledge and tools they need to make small, sustainable changes that collectively create a large positive impact. We believe that understanding your carbon footprint is the first step towards a greener future.</p>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-2 text-green-700">Simple Questions</h3>
+                            <p class="text-gray-600">No complex jargon. Just straightforward questions about your daily life.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-2 text-green-700">Instant Results</h3>
+                            <p class="text-gray-600">Get an immediate score and see how you compare to the average.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-2 text-green-700">Actionable Tips</h3>
+                            <p class="text-gray-600">Receive personalized advice to help you reduce your footprint.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz Section -->
+            <section id="quiz-page" class="hidden-section container mx-auto px-6 py-20 fade-in">
+                <div class="bg-white max-w-2xl mx-auto p-8 rounded-2xl shadow-lg">
+                    <div id="quiz-progress-bar" class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                        <div id="quiz-progress" class="bg-green-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <h2 id="quiz-question" class="text-2xl font-bold mb-6 text-center"></h2>
+                    <div id="quiz-answers" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    <div class="mt-6 text-center">
+                        <button id="next-question-btn" class="hidden bg-green-600 text-white font-semibold py-2 px-8 rounded-lg hover:bg-green-700 transition">Next</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-page" class="hidden-section container mx-auto px-6 py-20 fade-in">
+                <div class="bg-white max-w-3xl mx-auto p-8 rounded-2xl shadow-lg text-center">
+                    <h2 class="text-3xl font-bold mb-4">Your Eco Footprint Score</h2>
+                    <div id="score-visual" class="relative w-48 h-48 mx-auto my-6">
+                        <svg class="w-full h-full" viewBox="0 0 36 36">
+                            <path class="text-gray-200" stroke="currentColor" stroke-width="3.8" fill="none"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path id="score-circle" class="text-green-500" stroke="currentColor" stroke-width="3.8" fill="none"
+                                stroke-dasharray="100, 100" stroke-dashoffset="100" stroke-linecap="round"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                style="transition: stroke-dashoffset 1s ease-in-out;" />
+                        </svg>
+                        <div id="score-text" class="absolute inset-0 flex items-center justify-center text-5xl font-bold">0</div>
+                    </div>
+                    <p id="score-message" class="text-xl text-gray-600 mb-8"></p>
+                    <div id="tips-section">
+                        <h3 class="text-2xl font-semibold mb-4 border-t pt-6">Personalized Tips for You</h3>
+                        <ul id="tips-list" class="text-left list-disc list-inside space-y-2 text-gray-600"></ul>
+                    </div>
+                    <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                        <button id="restart-quiz-btn" class="bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition shadow-sm">Take Quiz Again</button>
+                        <button id="download-pdf-btn" class="bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-900 transition shadow-sm flex items-center justify-center gap-2">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                             Download Report
+                        </button>
+                    </div>
+                     <p id="pdf-login-prompt" class="text-sm text-gray-500 mt-4 hidden">Please <button id="login-prompt-link" class="text-green-600 underline">log in</button> to download your report.</p>
+                </div>
+            </section>
+
+        </main>
+        
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-8">
+            <div class="container mx-auto px-6 text-center">
+                <p>&copy; 2025 EcoTrack. All Rights Reserved.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div id="auth-modal-content" class="bg-white rounded-lg p-8 w-full max-w-sm relative transform transition-all duration-300 scale-95 opacity-0">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <h2 id="auth-title" class="text-2xl font-bold text-center mb-6">Sign Up for EcoTrack</h2>
+            <form id="auth-form">
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                     <p class="text-xs text-gray-500 mt-1">Must be at least 6 characters long.</p>
+                </div>
+                <button type="submit" id="auth-submit-btn" class="w-full bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">Create Account</button>
+            </form>
+            <p id="auth-error" class="text-red-500 text-sm mt-4 text-center"></p>
+            <p class="text-sm text-center mt-4">
+                <span id="auth-switch-text">Already have an account?</span>
+                <button id="auth-switch-btn" class="font-medium text-green-600 hover:text-green-500">Log In</button>
+            </p>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Your web app's Firebase configuration from your project
+        const userFirebaseConfig = {
+            apiKey: "AIzaSyBBgOF9ZQLjgEHKoBywMT8KfyTUHMaamPs",
+            authDomain: "ecofootprint-79c85.firebaseapp.com",
+            projectId: "ecofootprint-79c85",
+            storageBucket: "ecofootprint-79c85.appspot.com",
+            messagingSenderId: "1058027875195",
+            appId: "1:1058027875195:web:18b9168085fc1741592bde",
+            measurementId: "G-2G85MS6W7C"
+        };
+        
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : userFirebaseConfig;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged,
+            signInWithCustomToken,
+            signInAnonymously
+        } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+        // Initialize Firebase
+        let app, auth, analytics, currentUser = null;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            analytics = getAnalytics(app);
+        } catch (e) {
+            console.error("Firebase initialization failed:", e);
+        }
+
+        // --- DOM Elements ---
+        const pageElements = {
+            home: document.getElementById('home-page'),
+            about: document.getElementById('about'),
+            quiz: document.getElementById('quiz-page'),
+            results: document.getElementById('results-page'),
+        };
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+        const authModal = document.getElementById('auth-modal');
+        const authModalContent = document.getElementById('auth-modal-content');
+
+        // --- App State ---
+        let currentScore = 0;
+        let userAnswers = [];
+        let currentQuestionIndex = 0;
+        let isLoginMode = false;
+
+        // --- Quiz Data ---
+        const quizQuestions = [
+            {
+                question: "How do you primarily commute?",
+                answers: [
+                    { text: "Walk/Bike", points: 5, tip: "Walking or biking is fantastic! You're producing zero emissions." },
+                    { text: "Public Transit", points: 15, tip: "Using public transit is a great way to reduce traffic and emissions." },
+                    { text: "Carpool", points: 25, tip: "Carpooling is good, but see if you can add more public transit or biking days." },
+                    { text: "Drive Alone (Gas Car)", points: 50, tip: "Driving alone adds up. Consider carpooling, public transit, or biking even one day a week to make a big difference." }
+                ]
+            },
+            {
+                question: "How often do you eat red meat?",
+                answers: [
+                    { text: "Never/Rarely", points: 5, tip: "A plant-rich diet has the lowest carbon footprint. Keep it up!" },
+                    { text: "A few times a month", points: 20, tip: "Reducing red meat is a powerful climate action. 'Meatless Mondays' are a great start." },
+                    { text: "A few times a week", points: 40, tip: "Try swapping one or two red meat meals with chicken, fish, or plant-based options." },
+                    { text: "Almost every day", points: 60, tip: "Red meat production is very resource-intensive. Even small reductions can significantly lower your footprint." }
+                ]
+            },
+            {
+                question: "How do you handle food waste?",
+                answers: [
+                    { text: "Compost all scraps", points: 5, tip: "Composting is amazing for the environment, turning waste into nutrients." },
+                    { text: "Try to waste little", points: 15, tip: "Being mindful of food waste is key. Meal planning can help use everything you buy." },
+                    { text: "Some goes to waste", points: 30, tip: "Try to buy only what you need. Leftovers can often be used for another meal." },
+                    { text: "Often throw food out", points: 45, tip: "Food waste in landfills creates methane, a potent greenhouse gas. Small changes here have a big impact." }
+                ]
+            },
+            {
+                question: "What's your approach to shopping for goods?",
+                answers: [
+                    { text: "Buy used or local", points: 10, tip: "Supporting local and secondhand markets reduces transportation emissions and waste. Great job!" },
+                    { text: "Buy new when needed", points: 20, tip: "You're a conscious consumer. Look for products with minimal packaging." },
+                    { text: "Mix of online & local", points: 30, tip: "Consolidate online orders to reduce the number of shipments and their carbon footprint." },
+                    { text: "Mostly online shopping", points: 40, tip: "The convenience of online shopping comes with a high packaging and shipping footprint. Try to bundle items." }
+                ]
+            },
+            {
+                question: "How much of your household waste do you recycle?",
+                answers: [
+                    { text: "Almost everything", points: 5, tip: "Excellent recycling habits! Remember to also reduce and reuse where possible." },
+                    { text: "About half", points: 20, tip: "Great start! Check your local guidelines to see what else you can recycle." },
+                    { text: "Only some things", points: 35, tip: "Focus on recycling key items like paper, plastic bottles, and cans. It all helps!" },
+                    { text: "I don't recycle", points: 50, tip: "Starting is easy! Set up a separate bin for recyclables. It's one of the simplest ways to help." }
+                ]
+            },
+             {
+                question: "How mindful are you of electricity usage?",
+                answers: [
+                    { text: "Very mindful (unplug devices, use LED bulbs)", points: 10, tip: "You're an energy saver! Keep up the great work of unplugging unused electronics." },
+                    { text: "Somewhat mindful", points: 25, tip: "Good habits! Try switching all your bulbs to LEDs for significant energy savings." },
+                    { text: "Not very mindful", points: 40, tip: "A simple trick: use power strips to turn off multiple devices at once." },
+                    { text: "I leave things on often", points: 60, tip: "Leaving lights and electronics on really adds up. Make it a habit to turn things off when you leave a room." }
+                ]
+            },
+            {
+                question: "What is the typical length of your showers?",
+                answers: [
+                    { text: "Under 5 minutes", points: 5, tip: "Quick showers save a surprising amount of water and the energy to heat it. Fantastic!" },
+                    { text: "5-10 minutes", points: 15, tip: "This is a good average. Try a shower timer to see if you can cut it down by a minute or two." },
+                    { text: "10-15 minutes", points: 25, tip: "Heating water is energy-intensive. Reducing shower time is a direct way to lower your energy bill and footprint." },
+                    { text: "Over 15 minutes", points: 40, tip: "Long showers use a lot of energy and water. Challenge yourself to a 5-minute shower!" }
+                ]
+            },
+            {
+                question: "How often do you buy new clothing?",
+                answers: [
+                    { text: "Rarely / Second-hand", points: 5, tip: "Thrifting and buying less is a fantastic way to combat fast fashion. Well done!" },
+                    { text: "Every few months", points: 15, tip: "You're being conscious of your purchases. Look for quality items that will last longer." },
+                    { text: "Every month", points: 30, tip: "The fashion industry has a big footprint. Try a 'no-buy' month challenge!" },
+                    { text: "Frequently, I love trends!", points: 45, tip: "Fast fashion comes at a high environmental cost. Consider creating a capsule wardrobe or exploring clothing swaps." }
+                ]
+            }
+        ];
+
+        // --- Utility Functions ---
+        const shuffleArray = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        };
+
+        // --- Page Navigation ---
+        const showPage = (pageName, preventScroll = false) => {
+            // When showing a specific page, hide all sections first
+            Object.values(pageElements).forEach(page => page.classList.add('hidden-section'));
+            
+            if (pageName === 'home') {
+                 // For home, show both the home-page and about sections
+                 pageElements.home.classList.remove('hidden-section');
+                 pageElements.about.classList.remove('hidden-section');
+                 if (!preventScroll) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                 }
+            } else if (pageElements[pageName]) {
+                // For other pages like quiz or results, show only that one
+                pageElements[pageName].classList.remove('hidden-section');
+                pageElements[pageName].classList.add('fade-in');
+            }
+        };
+
+        // --- Quiz Logic ---
+        const startQuiz = () => {
+            currentScore = 0;
+            userAnswers = [];
+            currentQuestionIndex = 0;
+            showPage('quiz'); // This will hide home and about, and show only the quiz
+            displayQuestion();
+        };
+
+        const displayQuestion = () => {
+            if (currentQuestionIndex >= quizQuestions.length) {
+                showResults();
+                return;
+            }
+
+            nextQuestionBtn.classList.add('hidden');
+            const q = quizQuestions[currentQuestionIndex];
+            document.getElementById('quiz-question').textContent = q.question;
+            const answersContainer = document.getElementById('quiz-answers');
+            answersContainer.innerHTML = '';
+
+            const shuffledAnswers = [...q.answers];
+            shuffleArray(shuffledAnswers);
+
+            shuffledAnswers.forEach(answer => {
+                const button = document.createElement('button');
+                button.className = 'answer-btn bg-gray-100 p-4 rounded-lg text-left hover:bg-green-100 border-2 border-transparent transition';
+                button.textContent = answer.text;
+                button.onclick = () => selectAnswer(answer, button);
+                answersContainer.appendChild(button);
+            });
+            
+            const progress = (currentQuestionIndex / quizQuestions.length) * 100;
+            document.getElementById('quiz-progress').style.width = `${progress}%`;
+        };
+
+        const selectAnswer = (answer, selectedButton) => {
+            const answerButtons = document.querySelectorAll('.answer-btn');
+
+            // Check if an answer for this question was already selected
+            const alreadyAnswered = userAnswers[currentQuestionIndex] !== undefined;
+            
+            if (alreadyAnswered) {
+                // Subtract the points from the previously selected answer
+                currentScore -= userAnswers[currentQuestionIndex].points;
+            }
+
+            // Update or set the answer for the current question
+            userAnswers[currentQuestionIndex] = answer;
+            // Add the points for the new answer
+            currentScore += answer.points;
+
+            // Update UI by removing 'selected' from all and adding it to the clicked one
+            answerButtons.forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            selectedButton.classList.add('selected');
+
+            // Show the 'Next' button
+            nextQuestionBtn.classList.remove('hidden');
+        };
+        
+        // --- Results Logic ---
+        const showResults = () => {
+            showPage('results');
+            const scoreText = document.getElementById('score-text');
+            const scoreCircle = document.getElementById('score-circle');
+            const scoreMessage = document.getElementById('score-message');
+            const tipsList = document.getElementById('tips-list');
+            
+            const minPossibleScore = quizQuestions.reduce((sum, q) => sum + Math.min(...q.answers.map(a => a.points)), 0);
+            const maxPossibleScore = quizQuestions.reduce((sum, q) => sum + Math.max(...q.answers.map(a => a.points)), 0);
+            const scorePercentage = 100 - ((currentScore - minPossibleScore) / (maxPossibleScore - minPossibleScore)) * 100;
+            const finalScore = Math.round(scorePercentage);
+            
+            let message = '';
+            let colorClass = 'text-green-500';
+
+            if (finalScore >= 75) {
+                message = "Excellent! You're a true Eco-Champion. Your habits are making a real positive impact.";
+                colorClass = 'text-green-500';
+            } else if (finalScore >= 50) {
+                message = "Great job! You're on the right track. A few small changes can make you even more eco-friendly.";
+                colorClass = 'text-yellow-500';
+            } else {
+                message = "A good starting point. There are many opportunities for you to reduce your footprint and help the planet.";
+                colorClass = 'text-red-500';
+            }
+
+            scoreText.textContent = finalScore;
+            scoreText.className = `absolute inset-0 flex items-center justify-center text-5xl font-bold ${colorClass}`;
+            scoreMessage.textContent = message;
+
+            scoreCircle.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500');
+            scoreCircle.classList.add(colorClass);
+            setTimeout(() => {
+                scoreCircle.style.strokeDashoffset = 100 - finalScore;
+            }, 100);
+
+            tipsList.innerHTML = '';
+            userAnswers.forEach(answer => {
+                if (answer.points > 15) { 
+                    const li = document.createElement('li');
+                    li.textContent = answer.tip;
+                    tipsList.appendChild(li);
+                }
+            });
+            
+            updatePDFButtonVisibility();
+        };
+        
+        // --- Auth UI and Logic ---
+        const openAuthModal = (startAsLogin = false) => {
+            isLoginMode = startAsLogin;
+            updateAuthModalUI();
+            authModal.classList.remove('hidden');
+            authModal.classList.add('flex');
+            setTimeout(() => {
+                 authModalContent.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        };
+        
+        const closeAuthModal = () => {
+            authModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                authModal.classList.add('hidden');
+                authModal.classList.remove('flex');
+            }, 300);
+        };
+        
+        const updateAuthModalUI = () => {
+            document.getElementById('auth-title').textContent = isLoginMode ? 'Log In' : 'Sign Up for EcoTrack';
+            document.getElementById('auth-submit-btn').textContent = isLoginMode ? 'Log In' : 'Create Account';
+            document.getElementById('auth-switch-text').textContent = isLoginMode ? "Don't have an account?" : "Already have an account?";
+            document.getElementById('auth-switch-btn').textContent = isLoginMode ? 'Sign Up' : 'Log In';
+            document.getElementById('auth-error').textContent = '';
+            document.getElementById('auth-form').reset();
+        };
+        
+        const updateNavForAuth = (user) => {
+            currentUser = user;
+            const authActionBtn = document.getElementById('auth-action-btn');
+            const mobileAuthActionBtn = document.getElementById('mobile-auth-action-btn');
+            if(user) {
+                authActionBtn.textContent = 'Sign Out';
+                mobileAuthActionBtn.textContent = 'Sign Out';
+            } else {
+                authActionBtn.textContent = 'Sign Up';
+                mobileAuthActionBtn.textContent = 'Sign Up';
+            }
+            updatePDFButtonVisibility();
+        };
+
+        const updatePDFButtonVisibility = () => {
+            const downloadBtn = document.getElementById('download-pdf-btn');
+            const loginPrompt = document.getElementById('pdf-login-prompt');
+            if (currentUser) {
+                downloadBtn.classList.remove('hidden');
+                loginPrompt.classList.add('hidden');
+            } else {
+                downloadBtn.classList.add('hidden');
+                loginPrompt.classList.remove('hidden');
+            }
+        };
+
+        // --- PDF Generation ---
+        const generatePDF = () => {
+            if (!currentUser) {
+                openAuthModal(true);
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const finalScore = document.getElementById('score-text').textContent;
+            const message = document.getElementById('score-message').textContent;
+            
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(22);
+            doc.setTextColor(34, 139, 34); // Green color
+            doc.text("Your EcoTrack Footprint Report", 105, 20, null, null, 'center');
+            
+            doc.setFontSize(40);
+            doc.text(`Score: ${finalScore}`, 105, 50, null, null, 'center');
+            
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(12);
+            doc.setTextColor(100);
+            doc.text(doc.splitTextToSize(message, 180), 15, 70);
+            
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.setTextColor(34, 139, 34);
+            doc.text("Your Personalized Tips:", 15, 100);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(12);
+            doc.setTextColor(100);
+            const tips = Array.from(document.getElementById('tips-list').children).map(li => li.textContent);
+            let y = 110;
+            tips.forEach(tip => {
+                 if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                 }
+                 doc.text(`• ${doc.splitTextToSize(tip, 170)}`, 20, y);
+                 y += 15;
+            });
+            
+            doc.save(`EcoTrack-Report-${new Date().toISOString().slice(0,10)}.pdf`);
+        };
+
+        // --- Event Listeners ---
+        document.getElementById('hamburger-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('#nav-quiz-btn, #mobile-quiz-btn, #landing-quiz-btn').forEach(btn => {
+            btn.addEventListener('click', startQuiz);
+        });
+        
+        nextQuestionBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            displayQuestion();
+        });
+
+        document.getElementById('restart-quiz-btn').addEventListener('click', startQuiz);
+        document.getElementById('download-pdf-btn').addEventListener('click', generatePDF);
+        
+        document.querySelectorAll('#auth-action-btn, #mobile-auth-action-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (currentUser) {
+                    signOut(auth);
+                } else {
+                    openAuthModal(false);
+                }
+            });
+        });
+        document.getElementById('login-prompt-link').addEventListener('click', () => openAuthModal(true));
+
+        document.getElementById('close-modal-btn').addEventListener('click', closeAuthModal);
+        document.getElementById('auth-switch-btn').addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            updateAuthModalUI();
+        });
+
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('auth-error');
+            errorEl.textContent = '';
+            
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
+                closeAuthModal();
+            } catch (error) {
+                console.error("Auth Error:", error);
+                errorEl.textContent = error.message.replace('Firebase: ', '');
+            }
+        });
+        
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                closeAuthModal();
+            }
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#home' || targetId === '#') {
+                    showPage('home');
+                } else if (targetId === '#about') {
+                    // Show the home page sections without scrolling to the top
+                    showPage('home', true); 
+                    // Now scroll to the about section
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+                 document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
+
+        // --- Firebase Auth State Management ---
+        if(auth){
+             onAuthStateChanged(auth, (user) => {
+                updateNavForAuth(user);
+             });
+        }
+
+        // --- Initial Load ---
+        showPage('home');
+
+    </script>
+</body>
+</html>
